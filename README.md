@@ -8,7 +8,9 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_DB-FF6F00?style=for-the-badge)
+![spaCy](https://img.shields.io/badge/spaCy-3.7-09A3D5?style=for-the-badge&logo=spacy&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 **Hybrid RAG + Legal NER System for Accessible Legal Information**
@@ -59,10 +61,10 @@
 | **Frontend** | React 19, Tailwind CSS 3, React Router, React Markdown, Axios |
 | **Backend** | FastAPI, Uvicorn |
 | **RAG** | BM25 (rank-bm25), ChromaDB, Sentence Transformers |
-| **NER** | Regex-based extraction (+ optional spaCy) |
+| **NER** | spaCy (en_core_web_sm) + domain-specific regex |
 | **LLM** | Google Generative AI / Anthropic Claude |
 | **PDF** | ReportLab + Jinja2 |
-| **Database** | SQLite (SQLAlchemy) |
+| **Database** | PostgreSQL 18 (primary) / SQLite (fallback) |
 
 </div>
 
@@ -96,6 +98,13 @@ Edit `.env` and add your API key:
 GEMINI_API_KEY=your-gemini-api-key
 # OR
 ANTHROPIC_API_KEY=your-anthropic-api-key
+
+# PostgreSQL (optional - falls back to SQLite if not set)
+PG_HOST=localhost
+PG_PORT=5432
+PG_DB=law_advisor
+PG_USER=postgres
+PG_PASS=your_password
 ```
 
 Get a free Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
@@ -105,11 +114,13 @@ Get a free Gemini API key from [Google AI Studio](https://aistudio.google.com/ap
 ```bash
 cd backend
 pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 python main.py
 ```
 
 > Backend runs on `http://localhost:8000`
 > First startup downloads a ~79MB embedding model for ChromaDB (cached after that).
+> Console shows `[DB] Using PostgreSQL` or `[DB] Using SQLite` depending on your config.
 
 ### 4. Install & Start Frontend
 
@@ -155,7 +166,7 @@ graph LR
 
 ---
 
-## <img src="https://user-images.githubusercontent.com/74038190/235294019-40007353-6219-4ec5-b661-b3c35136dd0b.gif" width="25"> API Endpoints
+## <img src="https://user-images.githubusercontent.com/74038190/212281775-b468df30-4edc-4bf8-a4ee-f52f1aaddc86.gif" width="25"> API Endpoints
 
 | Method | Endpoint | Description |
 |:------:|----------|-------------|
@@ -192,7 +203,7 @@ AI_Law_Advisor/
 │   ├── pdf_generator.py        # Legal notice PDF generation
 │   ├── requirements.txt
 │   ├── database/
-│   │   └── db.py               # SQLite database
+│   │   └── db.py               # PostgreSQL / SQLite
 │   ├── rag_pipeline/
 │   │   └── hybrid_search.py    # BM25 + ChromaDB + RRF
 │   ├── ner/
