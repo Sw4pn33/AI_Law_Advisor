@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "[Build] Installing CPU-only PyTorch first (skip CUDA)..."
+pip install torch==2.3.0+cpu --extra-index-url https://download.pytorch.org/whl/cpu
+
 echo "[Build] Installing Python dependencies..."
 pip install -r requirements.txt
 
